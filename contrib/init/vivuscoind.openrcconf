@@ -1,0 +1,33 @@
+# /etc/conf.d/vivuscoind: config file for /etc/init.d/vivuscoind
+
+# Config file location
+#VIVUSCOIND_CONFIGFILE="/etc/vivuscoin/vivuscoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $VIVUSCOIND_USER)
+#VIVUSCOIND_PIDDIR="/var/run/vivuscoind"
+
+# What filename to give the pidfile
+#VIVUSCOIND_PIDFILE="${VIVUSCOIND_PIDDIR}/vivuscoind.pid"
+
+# Where to write vivuscoind data (be mindful that the blockchain is large)
+#VIVUSCOIND_DATADIR="/var/lib/vivuscoind"
+
+# User and group to own vivuscoind process
+#VIVUSCOIND_USER="vivuscoin"
+#VIVUSCOIND_GROUP="vivuscoin"
+
+# Path to vivuscoind executable
+#VIVUSCOIND_BIN="/usr/bin/vivuscoind"
+
+# Nice value to run vivuscoind under
+#VIVUSCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#VIVUSCOIND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for vivuscoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+VIVUSCOIND_SIGTERM_TIMEOUT=60

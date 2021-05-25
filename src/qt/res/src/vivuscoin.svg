@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="286.97192mm"
+   height="287.00522mm"
+   viewBox="0 0 286.97192 287.00522"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="vivuscoin.svg"
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)">
+  <defs
+     id="defs2">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Color Shift"
+       id="filter89">
+      <feColorMatrix
+         type="hueRotate"
+         values="215"
+         result="color1"
+         id="feColorMatrix85" />
+      <feColorMatrix
+         type="saturate"
+         values="0.434132"
+         result="color2"
+         id="feColorMatrix87" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="228.90397"
+     inkscape:cy="427.60113"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer2"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1252"
+     inkscape:window-height="847"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(188.08715,205.49068)">
+    <g
+       id="g42"
+       transform="matrix(0.46712644,0,0,0.46712644,-164.17437,-181.57136)"
+       style="filter:url(#filter89)">
+		<!-- white background circle for making B not transparent but still keep inner shadows -->
+
+		<circle
+   cx="255"
+   cy="255"
+   stroke-width="2"
+   fill="#ffffff"
+   id="circle19"
+   r="200" />
+
+	
+		<radialGradient
+   id="innerBtop"
+   cx="277.49051"
+   cy="196.44119"
+   r="34.3969"
+   gradientUnits="userSpaceOnUse">
+			<stop
+   offset="0"
+   style="stop-color:#F9AA4B"
+   id="stop21" />
+
+			<stop
+   offset="1"
+   style="stop-color:#F7931A"
+   id="stop23" />
+
+		</radialGradient>
+
+		<path
+   fill="url(#innerBtop)"
+   filter="url(#dropShadowAlpha)"
+   d="m 254.647,174.6 -13.983,56.08 c 15.855,3.951 64.735,20.071 72.656,-11.656 8.248,-33.096 -42.817,-40.472 -58.673,-44.424 z"
+   id="path26"
+   style="fill:url(#innerBtop)" />
+
+		
+		<radialGradient
+   id="innerBbottom"
+   cx="261.91531"
+   cy="284.56711"
+   r="39.8381"
+   gradientUnits="userSpaceOnUse">
+			<stop
+   offset="0"
+   style="stop-color:#F9AA4B"
+   id="stop28" />
+
+			<stop
+   offset="1"
+   style="stop-color:#F7931A"
+   id="stop30" />
+
+		</radialGradient>
+
+		<path
+   fill="url(#innerBbottom)"
+   filter="url(#dropShadowAlpha)"
+   d="m 233.608,258.984 -15.425,61.832 c 19.04,4.729 77.769,23.584 86.448,-11.296 9.072,-36.376 -51.984,-45.784 -71.023,-50.536 z"
+   id="path33"
+   style="fill:url(#innerBbottom)" />
+
+				
+		<radialGradient
+   id="coinShape"
+   cx="256.02759"
+   cy="256.00269"
+   r="255.98779"
+   gradientUnits="userSpaceOnUse">
+			<stop
+   offset="0"
+   style="stop-color:#F9AA4B"
+   id="stop35" />
+
+			<stop
+   offset="1"
+   style="stop-color:#F7931A"
+   id="stop37" />
+
+		</radialGradient>
+
+		<path
+   fill="url(#coinShape)"
+   filter="url(#dropShadowAlpha)"
+   d="M 317.871,7.656 C 180.751,-26.536 41.847,56.936 7.671,194.096 -26.537,331.232 56.927,470.144 194.031,504.336 331.191,538.535 470.094,455.071 504.287,317.928 538.479,180.776 455.023,41.848 317.871,7.656 Z"
+   id="path40"
+   style="fill:url(#coinShape)"
+   sodipodi:nodetypes="ccccc" />
+
+	<g
+   style="fill:#ffffff"
+   id="g490"
+   transform="matrix(12.414976,0,0,12.414976,46.39371,68.420629)" />
+</g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer2"
+       inkscape:label="Layer 2"
+       style="display:inline">
+      <path
+         d="M 30,16.092 V 10.908 A 1.5,1.5 0 1 0 28.726,8.221 L 25.67,5.72 A 2.483,2.483 0 0 0 23.5,2 2.5,2.5 0 0 0 21.05,4 h -8.1 A 2.5,2.5 0 1 0 8.685,6.211 L 4.409,12.177 A 2.473,2.473 0 0 0 3.5,12 a 2.5,2.5 0 0 0 0,5 2.473,2.473 0 0 0 1.525,-0.532 L 10.1,20.979 A 1.5,1.5 0 1 0 13,21.5 1.483,1.483 0 0 0 12.651,20.549 l 1.46,-2.044 a 3.9,3.9 0 0 0 4.522,-0.515 l 3.707,3.272 A 2.481,2.481 0 0 0 24,24.95 v 2.142 a 1.5,1.5 0 1 0 1,0 V 24.95 a 2.5,2.5 0 0 0 1.584,-3.827 L 28.857,18.85 A 1.5,1.5 0 1 0 30,16.092 Z m -1.907,-7.1 A 1.476,1.476 0 0 0 29,10.908 v 5.184 a 1.5,1.5 0 0 0 -0.793,0.66 l -8.23,-1.524 C 19.977,15.151 20,15.078 20,15 a 3.958,3.958 0 0 0 -0.143,-1 l 6.329,-2.532 A 0.5,0.5 0 0 0 25.814,10.54 l -6.332,2.532 a 3.984,3.984 0 0 0 -0.765,-0.988 l 3.8,-5.282 a 2.467,2.467 0 0 0 2.5,-0.322 z M 17.12,16.655 A 1.991,1.991 0 0 1 14.278,14 2.007,2.007 0 0 1 14.662,13.524 1.984,1.984 0 0 1 15.546,13.057 1.947,1.947 0 0 1 16,13 a 2,2 0 0 1 1.531,0.728 c 0.025,0.031 0.051,0.06 0.075,0.091 a 1.983,1.983 0 0 1 0.369,0.93 c 0,0.036 0.008,0.073 0.011,0.11 C 17.989,14.896 18,14.952 18,15 a 1.971,1.971 0 0 1 -0.193,0.843 c -0.009,0.02 -0.021,0.038 -0.031,0.057 A 2,2 0 0 1 17.12,16.655 Z M 12.95,5 h 8.1 A 2.49,2.49 0 0 0 21.7,6.225 L 17.9,11.5 A 3.838,3.838 0 0 0 14.605,11.263 L 12.073,6.429 A 2.49,2.49 0 0 0 12.95,5 Z m -1.157,15.03 a 1.453,1.453 0 0 0 -1.051,0.183 l -5.067,-4.5 A 2.468,2.468 0 0 0 6,14.5 2.494,2.494 0 0 0 5.251,12.718 L 9.5,6.789 a 2.372,2.372 0 0 0 1.686,0.1 l 2.53,4.829 A 4,4 0 0 0 12.141,14 H 8.5 a 0.5,0.5 0 0 0 0,1 H 12 a 3.979,3.979 0 0 0 1.293,2.929 z m 14.084,0.386 A 2.472,2.472 0 0 0 23,20.51 l -3.695,-3.26 a 4,4 0 0 0 0.487,-1.039 l 8.231,1.524 a 1.455,1.455 0 0 0 0.126,0.408 z"
+         id="path479"
+         style="fill:#ffffff;filter:url(#filter89)"
+         transform="matrix(5.7993635,0,0,5.7993635,-138.26928,-149.61028)" />
+    </g>
+  </g>
+</svg>

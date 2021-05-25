@@ -1,0 +1,92 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/vivuscoin/.vivuscoin" ]; then
+	VIVUSCOIND_DEFAULT_DATADIR="/var/lib/vivuscoin/.vivuscoin"
+else
+	VIVUSCOIND_DEFAULT_DATADIR="/var/lib/vivuscoind"
+fi
+
+VIVUSCOIND_CONFIGFILE=${VIVUSCOIND_CONFIGFILE:-/etc/vivuscoin/vivuscoin.conf}
+VIVUSCOIND_PIDDIR=${VIVUSCOIND_PIDDIR:-/var/run/vivuscoind}
+VIVUSCOIND_PIDFILE=${VIVUSCOIND_PIDFILE:-${VIVUSCOIND_PIDDIR}/vivuscoind.pid}
+VIVUSCOIND_DATADIR=${VIVUSCOIND_DATADIR:-${VIVUSCOIND_DEFAULT_DATADIR}}
+VIVUSCOIND_USER=${VIVUSCOIND_USER:-${VIVUSCOIN_USER:-vivuscoin}}
+VIVUSCOIND_GROUP=${VIVUSCOIND_GROUP:-vivuscoin}
+VIVUSCOIND_BIN=${VIVUSCOIND_BIN:-/usr/bin/vivuscoind}
+VIVUSCOIND_NICE=${VIVUSCOIND_NICE:-${NICELEVEL:-0}}
+VIVUSCOIND_OPTS="${VIVUSCOIND_OPTS:-${VIVUSCOIN_OPTS}}"
+
+name="Vivuscoin Core Daemon"
+description="Vivuscoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/vivuscoind"
+command_args="-pid=\"${VIVUSCOIND_PIDFILE}\" \
+		-conf=\"${VIVUSCOIND_CONFIGFILE}\" \
+		-datadir=\"${VIVUSCOIND_DATADIR}\" \
+		-daemon \
+		${VIVUSCOIND_OPTS}"
+
+required_files="${VIVUSCOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${VIVUSCOIND_USER} \
+			-N ${VIVUSCOIND_NICE} -w 2000"
+pidfile="${VIVUSCOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${VIVUSCOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${VIVUSCOIND_USER}:${VIVUSCOIND_GROUP}" \
+	"${VIVUSCOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${VIVUSCOIND_USER}:${VIVUSCOIND_GROUP}" \
+	"${VIVUSCOIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${VIVUSCOIND_USER}:${VIVUSCOIND_GROUP} \
+	-m 0660 \
+	${VIVUSCOIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${VIVUSCOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run vivuscoind."
+		eerror "The setting must appear in ${VIVUSCOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Vivuscoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}
