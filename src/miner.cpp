@@ -38,8 +38,10 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
     if (nOldTime < nNewTime)
         pblock->nTime = nNewTime;
 
-    // Updating time can change work required on testnet:
-    if (consensusParams.fPowAllowMinDifficultyBlocks)
+    // Updating time can change work required on testnet, and under the v1.1
+    // rules on every chain (the emergency easing depends on the block's own
+    // timestamp), so recompute nBits for the new time:
+    if (consensusParams.fPowAllowMinDifficultyBlocks || IsLwmaActive(pindexPrev->nHeight + 1, consensusParams))
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, consensusParams);
 
     return nNewTime - nOldTime;
