@@ -18,16 +18,25 @@
 /**
  * Maximum amount of time that a block timestamp is allowed to exceed the
  * current network-adjusted time before the block will be accepted.
+ *
+ * v1.1: 720 s (3T), down from Bitcoin's 2 hours.  The LWMA difficulty and
+ * the emergency easing both read block timestamps, and a 2 h allowance let a
+ * large miner hide ~30 blocks per visit (05-report.md, S2b); 3T hides 3.
+ * This is checked when a block is received, so it never affects blocks that
+ * are already in the chain.
  */
-static constexpr int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
+static constexpr int64_t MAX_FUTURE_BLOCK_TIME = 720;
 
 /**
  * Timestamp window used as a grace period by code that compares external
  * timestamps (such as timestamps passed to RPCs, or wallet key creation times)
  * to block timestamps. This should be set at least as high as
- * MAX_FUTURE_BLOCK_TIME.
+ * MAX_FUTURE_BLOCK_TIME.  Kept at the historical 2 hours: blocks before v1.1
+ * could be up to 2 h ahead of real time, and a wider rescan window only
+ * costs a few extra blocks scanned.
  */
-static constexpr int64_t TIMESTAMP_WINDOW = MAX_FUTURE_BLOCK_TIME;
+static constexpr int64_t TIMESTAMP_WINDOW = 2 * 60 * 60;
+static_assert(TIMESTAMP_WINDOW >= MAX_FUTURE_BLOCK_TIME, "TIMESTAMP_WINDOW must cover MAX_FUTURE_BLOCK_TIME");
 
 /**
  * Maximum gap between node time and block time used

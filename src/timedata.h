@@ -11,7 +11,14 @@
 #include <stdint.h>
 #include <vector>
 
-static const int64_t DEFAULT_MAX_TIME_ADJUSTMENT = 70 * 60;
+/**
+ * Maximum median peer clock offset the node will adopt (-maxtimeadjustment).
+ * v1.1: 360 s, half the 720 s future-block limit, so peers cannot push our
+ * adjusted time far enough to make us accept or produce blocks that others
+ * reject.  Note the offset only engages with >= 5 outbound peer samples; on
+ * a small network it stays 0 and NTP on the host is the real control.
+ */
+static const int64_t DEFAULT_MAX_TIME_ADJUSTMENT = 360;
 
 class CNetAddr;
 
