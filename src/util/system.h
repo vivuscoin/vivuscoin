@@ -12,6 +12,7 @@
 #define VIVUSCOIN_UTIL_SYSTEM_H
 
 #if defined(HAVE_CONFIG_H)
+#include <cstdint>
 #include <config/vivuscoin-config.h>
 #endif
 

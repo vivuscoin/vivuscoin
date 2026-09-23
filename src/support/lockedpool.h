@@ -6,6 +6,7 @@
 #ifndef VIVUSCOIN_SUPPORT_LOCKEDPOOL_H
 #define VIVUSCOIN_SUPPORT_LOCKEDPOOL_H
 
+#include <cstdint>
 #include <stdint.h>
 #include <list>
 #include <map>

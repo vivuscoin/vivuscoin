@@ -7,6 +7,7 @@
 #define VIVUSCOIN_NETADDRESS_H
 
 #if defined(HAVE_CONFIG_H)
+#include <array>
 #include <config/vivuscoin-config.h>
 #endif
 
