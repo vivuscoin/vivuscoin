@@ -174,6 +174,7 @@ BASE_SCRIPTS = [
     'wallet_resendwallettransactions.py',
     'wallet_fallbackfee.py',
     'feature_minchainwork.py',
+    'feature_lwma_v11.py',
     'rpc_getblockstats.py',
     'wallet_create_tx.py',
     'p2p_fingerprint.py',
