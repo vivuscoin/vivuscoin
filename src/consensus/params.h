@@ -76,6 +76,28 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
+
+    /**
+     * v1.1 difficulty rules (task 05/06): LWMA-1 per-block difficulty plus a
+     * bounded emergency easing rule for stalls.  They apply to every block at
+     * height >= nLwmaActivationHeight; blocks below keep the legacy
+     * every-5040-blocks retarget unchanged.  NO_LWMA_ACTIVATION means the new
+     * rules never activate on that chain.
+     */
+    static constexpr int NO_LWMA_ACTIVATION = std::numeric_limits<int>::max();
+    int nLwmaActivationHeight;
+    /** LWMA-1 averaging window N (blocks); the target block time T is nPowTargetSpacing. */
+    int nLwmaWindow;
+    /** LWMA-1 solvetime upper clamp, in multiples of T (the lower clamp is the monotone +1 s rule). */
+    int nLwmaMaxSolvetimeMult;
+    /** Emergency rule: the reference time is the maximum timestamp of this many most recent blocks. */
+    int nEmergencyRefSpan;
+    /** Emergency rule triggers when (candidate time - reference time) >= this many T. */
+    int nEmergencyTriggerMult;
+    /** Emergency rule: at most this many doublings of the target (then capped at powLimit). */
+    int nEmergencyMaxSteps;
+    /** Window credit of an eased block is its target >> max(0, steps - nEmergencyCreditCapSteps). */
+    int nEmergencyCreditCapSteps;
 };
 } // namespace Consensus
 

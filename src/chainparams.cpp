@@ -58,6 +58,39 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 }
 
 /**
+ * v1.1 difficulty rules (05-report.md, approved 2026-09-23): LWMA-1 with
+ * N = 60, T = nPowTargetSpacing, monotone +1 s / 6T solvetime clamps;
+ * emergency easing when the candidate block's time is >= 6T past the maximum
+ * timestamp of the last 11 blocks, one target doubling per further T, at most
+ * 24 doublings, capped at powLimit; eased blocks enter the LWMA window with
+ * credit target >> max(0, steps - 6).  Shared by every chain.
+ */
+static void SetV11DifficultyParams(Consensus::Params& consensus)
+{
+    consensus.nLwmaWindow = 60;
+    consensus.nLwmaMaxSolvetimeMult = 6;
+    consensus.nEmergencyRefSpan = 11;
+    consensus.nEmergencyTriggerMult = 6;
+    consensus.nEmergencyMaxSteps = 24;
+    consensus.nEmergencyCreditCapSteps = 6;
+}
+
+/**
+ * Mainnet activation height of the v1.1 difficulty rules.
+ *
+ *   *** SET BEFORE RELEASE ***
+ *
+ * Working value: frozen tip 24,092 + 50.  The owner fixes the final number
+ * when task 10 (controlled mining) is scheduled: "10..100 blocks after
+ * mining resumes".  Constraints from the simulation report: the offset must
+ * be >= 2 (activation >= 24,094, so the emergency rule never measures the
+ * five-year gap between blocks 24,092 and 24,093) and the height must be
+ * < 25,200 (the next legacy retarget).  Blocks below this height are
+ * validated exactly as before.
+ */
+static const int MAINNET_LWMA_ACTIVATION_HEIGHT = 24092 + 50; // SET BEFORE RELEASE
+
+/**
  * Main network
  */
 class CMainParams : public CChainParams {
@@ -97,6 +130,10 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("000000000040a3597214ba978bdf6e853eb9d84c8abe39bcd90d57bc8c3a01fb"); // 24092
+
+        // v1.1 difficulty rules (LWMA-1 + emergency easing), see above.
+        SetV11DifficultyParams(consensus);
+        consensus.nLwmaActivationHeight = MAINNET_LWMA_ACTIVATION_HEIGHT;
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -207,6 +244,10 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000000000037a8cd3e06cd5edbfe9dd1dbcc5dacab279376ef7cfc2b4c75"); //1354312
 
+        // v1.1 difficulty rules: low activation height so a fresh testnet exercises them.
+        SetV11DifficultyParams(consensus);
+        consensus.nLwmaActivationHeight = 200;
+
         pchMessageStart[0] = 0x0b;
         pchMessageStart[1] = 0x11;
         pchMessageStart[2] = 0x09;
@@ -305,7 +346,14 @@ public:
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
+        // v1.1 difficulty rules are off by default on regtest (the functional
+        // test suite builds blocks with a fixed nBits); tests that exercise
+        // them pass -lwmaactivationheight=<n>.
+        SetV11DifficultyParams(consensus);
+        consensus.nLwmaActivationHeight = Consensus::Params::NO_LWMA_ACTIVATION;
+
         UpdateVersionBitsParametersFromArgs(args);
+        UpdateLwmaActivationHeightFromArgs(args);
 
         genesis = CreateGenesisBlock(1620501280, 3857413791, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -352,6 +400,7 @@ public:
         consensus.vDeployments[d].nTimeout = nTimeout;
     }
     void UpdateVersionBitsParametersFromArgs(const ArgsManager& args);
+    void UpdateLwmaActivationHeightFromArgs(const ArgsManager& args);
 };
 
 void CRegTestParams::UpdateVersionBitsParametersFromArgs(const ArgsManager& args)
@@ -384,6 +433,17 @@ void CRegTestParams::UpdateVersionBitsParametersFromArgs(const ArgsManager& args
             throw std::runtime_error(strprintf("Invalid deployment (%s)", vDeploymentParams[0]));
         }
     }
+}
+
+void CRegTestParams::UpdateLwmaActivationHeightFromArgs(const ArgsManager& args)
+{
+    if (!args.IsArgSet("-lwmaactivationheight")) return;
+    int64_t nHeight = args.GetArg("-lwmaactivationheight", Consensus::Params::NO_LWMA_ACTIVATION);
+    if (nHeight < 0 || nHeight > Consensus::Params::NO_LWMA_ACTIVATION) {
+        throw std::runtime_error(strprintf("Invalid -lwmaactivationheight (%d)", nHeight));
+    }
+    consensus.nLwmaActivationHeight = (int)nHeight;
+    LogPrintf("Setting v1.1 difficulty rules (LWMA-1 + emergency easing) activation height to %d\n", consensus.nLwmaActivationHeight);
 }
 
 static std::unique_ptr<const CChainParams> globalChainParams;
