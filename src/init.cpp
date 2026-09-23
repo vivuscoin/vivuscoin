@@ -501,6 +501,7 @@ void SetupServerArgs()
     gArgs.AddArg("-mocktime=<n>", "Replace actual time with <n> seconds since epoch (default: 0)", true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-maxsigcachesize=<n>", strprintf("Limit sum of signature cache and script execution cache sizes to <n> MiB (default: %u)", DEFAULT_MAX_SIG_CACHE_SIZE), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-maxtipage=<n>", strprintf("Maximum tip age in seconds to consider node in initial block download (default: %u)", DEFAULT_MAX_TIP_AGE), true, OptionsCategory::DEBUG_TEST);
+    gArgs.AddArg("-maxreorgdepth=<n>", strprintf("Refuse to reorganize the active chain deeper than <n> blocks once initial block download is complete (rolling finality). -1 disables the limit, for manual recovery (default: %d)", DEFAULT_MAX_REORG_DEPTH), false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-maxtxfee=<amt>", strprintf("Maximum total fees (in %s) to use in a single wallet transaction or raw transaction; setting this too low may abort large transactions (default: %s)",
         CURRENCY_UNIT, FormatMoney(DEFAULT_TRANSACTION_MAXFEE)), false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-printpriority", strprintf("Log transaction fee per kB when mining blocks (default: %u)", DEFAULT_PRINTPRIORITY), true, OptionsCategory::DEBUG_TEST);
@@ -1162,6 +1163,17 @@ bool AppInitParameterInteraction()
         return InitError("unknown rpcserialversion requested.");
 
     nMaxTipAge = gArgs.GetArg("-maxtipage", DEFAULT_MAX_TIP_AGE);
+
+    {
+        int64_t nDepth = gArgs.GetArg("-maxreorgdepth", DEFAULT_MAX_REORG_DEPTH);
+        if (nDepth > std::numeric_limits<int>::max()) nDepth = std::numeric_limits<int>::max();
+        nMaxReorgDepth = nDepth < 0 ? -1 : (int)nDepth;
+        if (nMaxReorgDepth < 0) {
+            LogPrintf("WARNING: -maxreorgdepth=-1: rolling finality is DISABLED; the node will follow any heavier chain.\n");
+        } else {
+            LogPrintf("Rolling finality: reorgs deeper than %d blocks are refused outside initial block download (-maxreorgdepth).\n", nMaxReorgDepth);
+        }
+    }
 
     fEnableReplacement = gArgs.GetBoolArg("-mempoolreplacement", DEFAULT_ENABLE_REPLACEMENT);
     if ((!fEnableReplacement) && gArgs.IsArgSet("-mempoolreplacement")) {

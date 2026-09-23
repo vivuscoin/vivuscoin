@@ -205,6 +205,10 @@ private:
 
     void InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
     CBlockIndex* FindMostWorkChain() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    /** Rolling finality: whether switching to this candidate would reorganize the active chain deeper than -maxreorgdepth. */
+    bool IsReorgTooDeep(const CBlockIndex* pindexCandidate) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    /** Last candidate refused by IsReorgTooDeep, to log each refused chain tip once. */
+    const CBlockIndex* m_last_refused_reorg = nullptr;
     void ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos, const Consensus::Params& consensusParams) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
     bool RollforwardBlock(const CBlockIndex* pindex, CCoinsViewCache& inputs, const CChainParams& params) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
@@ -243,6 +247,7 @@ bool fCheckpointsEnabled = DEFAULT_CHECKPOINTS_ENABLED;
 size_t nCoinCacheUsage = 5000 * 300;
 uint64_t nPruneTarget = 0;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
+int nMaxReorgDepth = DEFAULT_MAX_REORG_DEPTH;
 bool fEnableReplacement = DEFAULT_ENABLE_REPLACEMENT;
 
 uint256 hashAssumeValid;
@@ -2459,6 +2464,38 @@ bool CChainState::ConnectTip(CValidationState& state, const CChainParams& chainp
     return true;
 }
 
+bool CChainState::IsReorgTooDeep(const CBlockIndex* pindexCandidate)
+{
+    AssertLockHeld(cs_main);
+    if (nMaxReorgDepth < 0) return false;
+    const CBlockIndex* pindexTip = chainActive.Tip();
+    if (pindexTip == nullptr || pindexCandidate == nullptr || chainActive.Contains(pindexCandidate)) return false;
+    // Never applies while syncing, reindexing or importing: the node has no
+    // chain of its own to defend yet, and reindex must be able to rebuild
+    // whatever is on disk.
+    if (IsInitialBlockDownload()) return false;
+    const CBlockIndex* pindexFork = chainActive.FindFork(pindexCandidate);
+    const int nDepth = pindexTip->nHeight - (pindexFork ? pindexFork->nHeight : -1);
+    if (nDepth <= nMaxReorgDepth) return false;
+
+    if (pindexCandidate != m_last_refused_reorg) {
+        m_last_refused_reorg = pindexCandidate;
+        const std::string strWarning = strprintf(
+            "WARNING: refusing to reorganize %d blocks (limit -maxreorgdepth=%d): competing chain tip %s (height %d, log2_work=%.6g) "
+            "forks from our chain at height %d; our tip %s (height %d, log2_work=%.6g). Keeping our chain. "
+            "If the other chain is the right one, run 'invalidateblock' on the first block of our branch, "
+            "or restart with -maxreorgdepth=-1 (disables the limit).",
+            nDepth, nMaxReorgDepth,
+            pindexCandidate->GetBlockHash().ToString(), pindexCandidate->nHeight, log(pindexCandidate->nChainWork.getdouble())/log(2.0),
+            pindexFork ? pindexFork->nHeight : -1,
+            pindexTip->GetBlockHash().ToString(), pindexTip->nHeight, log(pindexTip->nChainWork.getdouble())/log(2.0));
+        LogPrintf("%s\n", strWarning);
+        SetMiscWarning(strWarning);
+        AlertNotify(strWarning);
+    }
+    return true;
+}
+
 /**
  * Return the tip of the chain with the most work in it, that isn't
  * known to be invalid (it's however far from certain to be valid).
@@ -2470,6 +2507,16 @@ CBlockIndex* CChainState::FindMostWorkChain() {
         // Find the best candidate header.
         {
             std::set<CBlockIndex*, CBlockIndexWorkComparator>::reverse_iterator it = setBlockIndexCandidates.rbegin();
+            // Rolling finality: pass over candidates that would reorganize
+            // the active chain deeper than -maxreorgdepth.  They stay in the
+            // set (nothing about them is marked invalid or written to disk),
+            // so the block index invariants hold and the operator can still
+            // switch to them by hand (invalidateblock / -maxreorgdepth=-1).
+            // The active tip itself is always a candidate at depth 0, so the
+            // scan terminates on it at the latest.
+            while (it != setBlockIndexCandidates.rend() && IsReorgTooDeep(*it)) {
+                ++it;
+            }
             if (it == setBlockIndexCandidates.rend())
                 return nullptr;
             pindexNew = *it;

@@ -112,6 +112,13 @@ static const int64_t BLOCK_DOWNLOAD_TIMEOUT_BASE = 1000000;
 static const int64_t BLOCK_DOWNLOAD_TIMEOUT_PER_PEER = 500000;
 
 static const int64_t DEFAULT_MAX_TIP_AGE = 24 * 60 * 60 * 365;
+/**
+ * Rolling finality (v1.1, node policy): once out of initial block download
+ * the node refuses to reorganize its active chain deeper than this many
+ * blocks, however much work the competing chain has.  -1 disables it, which
+ * is the manual recovery switch (see the log message in FindMostWorkChain).
+ */
+static const int DEFAULT_MAX_REORG_DEPTH = 10;
 /** Maximum age of our tip in seconds for us to be considered current for fee estimation */
 static const int64_t MAX_FEE_ESTIMATION_TIP_AGE = 3 * 60 * 60;
 
@@ -171,6 +178,8 @@ extern CFeeRate minRelayTxFee;
 extern CAmount maxTxFee;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 extern int64_t nMaxTipAge;
+/** Maximum reorg depth accepted outside IBD (-maxreorgdepth); negative disables the limit. */
+extern int nMaxReorgDepth;
 extern bool fEnableReplacement;
 
 /** Block hash whose ancestors we will assume to have valid scripts without checking them. */
