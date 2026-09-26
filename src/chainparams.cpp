@@ -88,7 +88,7 @@ static void SetV11DifficultyParams(Consensus::Params& consensus)
  * < 25,200 (the next legacy retarget).  Blocks below this height are
  * validated exactly as before.
  */
-static const int MAINNET_LWMA_ACTIVATION_HEIGHT = 24092 + 50; // SET BEFORE RELEASE
+static const int MAINNET_LWMA_ACTIVATION_HEIGHT = 24147; // tip 24,097 (2026-09-24) + 50; set for the v1.1.0 release
 
 /**
  * Main network
