@@ -764,6 +764,23 @@ AC_CHECK_DECLS([getifaddrs, freeifaddrs],,,
 )
 AC_CHECK_DECLS([strnlen])
 
+dnl Check for gmtime_r(), fallback to gmtime_s() if that is unavailable.
+dnl Fail if neither are available. (mingw-w64 >= 6 only declares gmtime_r
+dnl when pthread.h is included first; ported from Bitcoin Core PR #14192.)
+AC_MSG_CHECKING(for gmtime_r)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <ctime>]],
+    [[ gmtime_r((const time_t *) nullptr, (struct tm *) nullptr); ]])],
+    [ AC_MSG_RESULT(yes); AC_DEFINE(HAVE_GMTIME_R, 1, [Define this symbol if gmtime_r is available]) ],
+    [ AC_MSG_RESULT(no);
+        AC_MSG_CHECKING(for gmtime_s);
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <ctime>]],
+            [[ gmtime_s((struct tm *) nullptr, (const time_t *) nullptr); ]])],
+            [ AC_MSG_RESULT(yes)],
+            [ AC_MSG_RESULT(no); AC_MSG_ERROR(Both gmtime_r and gmtime_s are unavailable) ]
+        )
+    ]
+)
+
 # Check for daemon(3), unrelated to --with-daemon (although used by it)
 AC_CHECK_DECLS([daemon])
 
