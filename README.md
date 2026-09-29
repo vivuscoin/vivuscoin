@@ -1,78 +1,84 @@
-Vivuscoin Core integration/staging tree
-=====================================
+# Vivuscoin Core
 
-[![Build Status](https://travis-ci.org/vivuscoin/vivuscoin.svg?branch=master)](https://travis-ci.org/vivuscoin/vivuscoin)
+Vivuscoin (VVC) is an open-source SHA-256d proof-of-work cryptocurrency: 240-second blocks and a 50 VVC block
+reward that halves every 210,000 blocks. Vivuscoin Core is the wallet and full-node software, derived from
+Bitcoin Core and released under the MIT licence.
 
-https://vivuscoin.com
+Website: https://vivuscoin.com · Explorer: https://vivuscoin.com/explorer/ · News: https://vivuscoin.com/news/
 
-What is Vivuscoin?
-----------------
+## Downloads
 
-Vivuscoin is an experimental digital currency that enables instant payments to
-anyone, anywhere in the world. Vivuscoin uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Vivuscoin Core is the name of open source
-software which enables the use of this currency.
+Current release: **Vivuscoin Core 1.1.0** — https://github.com/vivuscoin/vivuscoin/releases/tag/v1.1.0
 
-For more information, as well as an immediately useable, binary version of
-the Vivuscoin Core software, see https://vivuscoin.com/, or read the
-[original whitepaper](https://vivuscoin.com/vivuscoin.pdf).
+| Platform | File |
+|---|---|
+| Windows 64-bit | `vivuscoin-1.1.0-win64-setup.exe` (installer) or `vivuscoin-1.1.0-win64.zip` |
+| macOS (Apple silicon) | `Vivuscoin-Core-1.1.0-macos-arm64.dmg` (GUI, macOS 26) or `vivuscoin-1.1.0-macos-arm64-headless.tar.gz` (daemon + CLI, macOS 14+) |
+| Linux x86-64 | `vivuscoin-1.1.0-x86_64-linux-gnu.tar.gz` (daemon, CLI and `vivuscoin-qt`; glibc 2.29+) |
 
-License
--------
+Compare each file with `SHA256SUMS` on the release page before running it. The macOS and Windows builds are
+unsigned: right-click › Open on macOS, confirm the SmartScreen prompt on Windows.
 
-Vivuscoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+**Upgrade to 1.1 before block 24,147.** Install over the existing wallet; the data directory and wallet file
+are reused and no reindex is needed.
 
-Development Process
--------------------
+## Quick start
 
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/vivuscoin/vivuscoin/tags) are created
-regularly to indicate new official, stable release versions of Vivuscoin Core.
+1. Install and start Vivuscoin Core. It syncs from the seed nodes; if it shows no connections, add
+   `addnode=seed1.vivuscoin.com` and `addnode=seed2.vivuscoin.com` to `vivuscoin.conf` and restart.
+2. The wallet is synced when its block height matches https://vivuscoin.com/explorer/.
+3. Receive tab › create an address (it starts with `A`). Legacy `7…`/`8…` and bech32 `vvc1…` addresses also work.
+4. Get VVC by mining (below) or from the airdrop: https://vivuscoin.com/airdrop/ (50 VVC per address).
 
-The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md)
-and useful hints for developers can be found in [doc/developer-notes.md](doc/developer-notes.md).
+Headless: `vivuscoind -daemon`, then `vivuscoin-cli getblockchaininfo`. Guides: https://vivuscoin.com/get-started/
+and https://vivuscoin.com/developers/.
 
-Testing
--------
+## Mining
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+Solo stratum endpoint for any SHA-256d miner: `stratum+tcp://pool.vivuscoin.com:3333`, username = your VVC
+address, password `x`. A block you find pays its full 50 VVC reward to that address; the endpoint holds nothing.
 
-### Automated Testing
+```
+cpuminer -a sha256d -o stratum+tcp://pool.vivuscoin.com:3333 -u <YOUR_VVC_ADDRESS> -p x
+```
 
-Developers are strongly encouraged to write [unit tests](src/test/README.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with: `make check`. Further details on running
-and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
+Live pool hashrate and workers: https://vivuscoin.com/pool/ (JSON: https://vivuscoin.com/pool/stats.json).
+Guide: https://vivuscoin.com/mining/. You can also mine against your own node with `getblocktemplate`.
 
-There are also [regression and integration tests](/test), written
-in Python, that are run automatically on the build server.
-These tests can be run (if the [test dependencies](/test) are installed) with: `test/functional/test_runner.py`
+## Network
 
-The Travis CI system makes sure that every pull request is built for Windows, Linux, and macOS, and that unit/sanity tests are run automatically.
+| Parameter | Value |
+|---|---|
+| Proof of work | SHA-256d |
+| Block target / reward | 240 s / 50 VVC, halving every 210,000 blocks |
+| Difficulty | adjusts every block (LWMA-1) |
+| P2P port | 8168 |
+| Seed nodes | `seed1.vivuscoin.com`, `seed2.vivuscoin.com` |
+| Genesis | `000000009ba1cc4ecf00c8d24b704f3e88f8c03a70fba8f3e6c350007b5a2cd5` |
+| User agent | `/Parvus:1.1.0/` |
 
-### Manual Quality Assurance (QA) Testing
+Explorer API: `https://vivuscoin.com/explorer/api/v1/` (for example `totalcoins`).
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
+## Build from source
 
-Translations
-------------
+Release tag: `v1.1.0`. Instructions: [doc/build-unix.md](doc/build-unix.md), [doc/build-osx.md](doc/build-osx.md),
+[doc/build-windows.md](doc/build-windows.md). Release binaries for Linux and Windows are built with the
+[`depends`](depends/README.md) system.
 
-Changes to translations as well as new translations can be submitted to
-[Vivuscoin Core's Transifex page](https://www.transifex.com/projects/p/vivuscoin/).
+```
+./autogen.sh
+./configure
+make
+make check                      # unit tests
+test/functional/test_runner.py  # functional tests
+```
 
-Translations are periodically pulled from Transifex and merged into the git repository. See the
-[translation process](doc/translation_process.md) for details on how this works.
+## Contributing
 
-**Important**: We do not accept translation changes as GitHub pull requests because the next
-pull from Transifex would automatically overwrite them again.
+Bug reports and questions: https://github.com/vivuscoin/vivuscoin/issues · support@vivuscoin.com.
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [doc/developer-notes.md](doc/developer-notes.md). Consensus changes
+get the most scrutiny and the slowest merges, on purpose.
 
-Translators should also subscribe to the [mailing list](https://groups.google.com/forum/#!forum/vivuscoin-translators).
-=======
+## License
+
+Vivuscoin Core is released under the terms of the MIT licence. See [COPYING](COPYING).
