@@ -76,6 +76,8 @@ test/functional/test_runner.py  # functional tests
 ## Contributing
 
 Bug reports and questions: https://github.com/vivuscoin/vivuscoin/issues · support@vivuscoin.com.
+
+Community: BitcoinTalk thread https://bitcointalk.org/index.php?topic=5595753.0
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [doc/developer-notes.md](doc/developer-notes.md). Consensus changes
 get the most scrutiny and the slowest merges, on purpose.
 
