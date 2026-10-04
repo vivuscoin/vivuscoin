@@ -960,8 +960,8 @@ void VivuscoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nV
 
     QString tooltip;
 
-    // QDateTime currentDate = QDateTime::currentDateTime();
-    qint64 secs = 0;//blockDate.secsTo(currentDate);
+    QDateTime currentDate = QDateTime::currentDateTime();
+    qint64 secs = blockDate.secsTo(currentDate);
 
     tooltip = tr("Processed %n block(s) of transaction history.", "", count);
 
