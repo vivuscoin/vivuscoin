@@ -4,7 +4,7 @@ Vivuscoin (VVC) is an open-source SHA-256d proof-of-work cryptocurrency: 240-sec
 reward that halves every 210,000 blocks. Vivuscoin Core is the wallet and full-node software, derived from
 Bitcoin Core and released under the MIT licence.
 
-Website: https://vivuscoin.com · Explorer: https://vivuscoin.com/explorer/ · News: https://vivuscoin.com/news/
+Website: https://vivuscoin.com · Supply: https://vivuscoin.com/supply/ · Explorer: https://vivuscoin.com/explorer/ · News: https://vivuscoin.com/news/
 
 ## Downloads
 
@@ -28,7 +28,7 @@ are reused and no reindex is needed.
    `addnode=seed1.vivuscoin.com` and `addnode=seed2.vivuscoin.com` to `vivuscoin.conf` and restart.
 2. The wallet is synced when its block height matches https://vivuscoin.com/explorer/.
 3. Receive tab › create an address (it starts with `A`). Legacy `7…`/`8…` and bech32 `vvc1…` addresses also work.
-4. Get VVC by mining (below) or from the airdrop: https://vivuscoin.com/airdrop/ (50 VVC per address).
+4. Get VVC by mining (below) or through node and contributor grants: https://vivuscoin.com/airdrop/.
 
 Headless: `vivuscoind -daemon`, then `vivuscoin-cli getblockchaininfo`. Guides: https://vivuscoin.com/get-started/
 and https://vivuscoin.com/developers/.
@@ -45,19 +45,20 @@ cpuminer -a sha256d -o stratum+tcp://pool.vivuscoin.com:3333 -u <YOUR_VVC_ADDRES
 Live pool hashrate and workers: https://vivuscoin.com/pool/ (JSON: https://vivuscoin.com/pool/stats.json).
 Guide: https://vivuscoin.com/mining/. You can also mine against your own node with `getblocktemplate`.
 
-## Network
+## Network & supply
 
 | Parameter | Value |
 |---|---|
 | Proof of work | SHA-256d |
 | Block target / reward | 240 s / 50 VVC, halving every 210,000 blocks |
+| 2021 premine & locks | 125,829,120 VVC (15 blocks at heights 8, 16, …, 120 in `GetBlockSubsidy`); 117,314,827 VVC locked in 4 on-chain BIP65 (`OP_CHECKLOCKTIMEVERIFY`) P2SH vaults (blocks 210,000–630,000) — full breakdown at https://vivuscoin.com/supply/ |
 | Difficulty | adjusts every block (LWMA-1) |
-| P2P port | 8168 |
+| P2P / RPC port | 8168 / 8169 |
 | Seed nodes | `seed1.vivuscoin.com`, `seed2.vivuscoin.com` |
 | Genesis | `000000009ba1cc4ecf00c8d24b704f3e88f8c03a70fba8f3e6c350007b5a2cd5` |
 | User agent | `/Parvus:1.1.0/` |
 
-Explorer API: `https://vivuscoin.com/explorer/api/v1/` (for example `totalcoins`).
+Explorer API: `https://vivuscoin.com/explorer/api/v1/` (`circulating`, `totalcoins`, `status`).
 
 ## Build from source
 
